@@ -1,50 +1,78 @@
 // TODO: Include packages needed for this application
 const inquirer = require('inquirer');
-
+const fs = require('fs');
+const { generateMarkdown, renderLicenseSection } = require('./utils/generateMarkdown.js')
 
 // TODO: Create an array of questions for user input
-async function promptUser() {
-    const response = await inquirer.prompt([
-      {
+const questions = [
+    {
         type: 'input',
         name: 'title',
-        message: 'What is the title of your project?'
-      },
-      {
+        message: 'What is your README title?',
+    }, 
+    {
         type: 'input',
         name: 'description',
-        message: 'Please enter a description of your project:'
-      },
-      {
+        message: 'Add a description',
+    },
+    {
         type: 'input',
         name: 'installation',
-        message: 'Please provide installation instructions for your project:'
-      },
-      {
+        message: 'Add installation instructions',
+    }, 
+    {
         type: 'input',
         name: 'usage',
-        message: 'Please provide usage information for your project:'
-      },
-      {
+        message: 'Add usage instructions',
+    },
+    {
         type: 'input',
         name: 'contributing',
-        message: 'Please provide contribution guidelines for your project:'
-      },
-      {
+        message: 'Add contribution instructions',
+    },
+    {
         type: 'input',
         name: 'tests',
-        message: 'Please provide test instructions for your project:'
-      }
-    ]);
-    return response;
-  }
-  
+        message: 'Add test information',
+    }, 
+    {
+        type: 'list',
+        name: 'license',
+        choices: ['ISC', 'MIT', 'Mozilla'],
+        filter(val) {
+            return val.toLowerCase();
+        },
+    },
+    {
+        type: 'input',
+        name: 'github',
+        message: 'Enter your Github:',
+    },
+    {
+        type: 'input',
+        name: 'email',
+        message: 'Enter your email:'
+    }
+];
+
+
 
 // TODO: Create a function to write README file
-function writeToFile(fileName, data) {}
+function writeToFile(fileName, data) {
+    fs.writeFile(fileName, data, (err) =>
+    err ? console.error(err) : console.log('Commit logged!'))
+}
 
 // TODO: Create a function to initialize app
-function init() {}
+function init() {
+    inquirer.prompt(questions).then((answers) => {
+        console.log(JSON.stringify(answers, null, '  '));
+
+        writeToFile('./example-READMEs/TEST1.md', generateMarkdown(answers))
+        fs.appendFile('./example-READMEs/TEST1.md', renderLicenseSection(answers.license), (err) =>
+        err ? console.error(err) : console.log('Commit logged!'))
+      });
+}
 
 // Function call to initialize app
 init();
